@@ -1,0 +1,48 @@
+<%- | String   $server_url,
+      String   $key_auth,
+      String   $gpg_recipient,
+      Array    $vm_list,
+| -%>
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+SERVER_URL="<%= $server_url %>"
+KEY_AUTH="<%= $key_auth %>"
+GPG_RECIPIENT="<%= $gpg_recipient %>"
+VM_LIST=(<%= join($vm_list, ' ') %>)
+
+# Output Date/Time
+printf "\n\n\n"
+date
+
+# Hypervisor VM live disk backup
+
+# Get list of running VMs
+for VM in "${VM_LIST[@]}"
+do
+  # Get location of first disk
+  DISK_PATH=$(virsh domblklist ${VM} | sed -n '3p' | awk '{print $2}')
+
+  # Get disk id of first disk
+  DISK_ID=$(virsh domblklist ${VM} | sed -n '3p' | awk '{print $1}')
+
+  # Create snapshot
+  virsh snapshot-create-as --domain ${VM} snapshot_backup1 --diskspec ${DISK_ID},file=${DISK_PATH}.snapshot_backup1 --disk-only --atomic --no-metadata
+
+  # Encrypt original disk
+  /usr/bin/gpg --encrypt --compress-level 0 --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${DISK_PATH}
+
+  # Merge snapshot back to original
+  virsh blockcommit ${VM} ${DISK_ID} --active --verbose --pivot
+
+  # Delete delta file
+  rm ${DISK_PATH}.snapshot_backup1
+
+  # SFTP encrypted file to server
+  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $'put -r '${DISK_PATH}.gpg
+
+  # Delete encrypted file
+  rm ${DISK_PATH}.gpg
+done
