@@ -1,13 +1,16 @@
 define encrypted_backup::backup_profile (
-  $backup_dir    = "/opt/encrypted_backup/${title}_backup",
-  $temp_dir      = "/opt/encrypted_backup/${title}_temp",
-  $commands_pre  = [],
-  $commands_post = [],
   $server_url,
   $key_auth,
   $gpg_recipient,
   $cron_hour,
   $cron_minute,
+  $cron_monthday  = '*',
+  $cron_month     = '*',
+  $cron_weekday   = '*',
+  $backup_dir     = "/opt/encrypted_backup/${title}_backup",
+  $temp_dir       = "/opt/encrypted_backup/${title}_temp",
+  $commands_pre   = [],
+  $commands_post  = [],
 ) {
   file {"/opt/encrypted_backup/profile_${title}.sh":
     ensure   => present,
@@ -32,10 +35,13 @@ define encrypted_backup::backup_profile (
   }
 
   cron { "encrypted_backup_${title}":
-    command  => "bash -x /opt/encrypted_backup/profile_${title}.sh >> /opt/encrypted_backup/profile_${title}.log 2>&1",
-    user     => 'root',
-    hour     => $cron_hour,
-    minute   => $cron_minute,
+    command   => "bash -x /opt/encrypted_backup/profile_${title}.sh >> /opt/encrypted_backup/profile_${title}.log 2>&1",
+    user      => 'root',
+    hour      => $cron_hour,
+    minute    => $cron_minute,
+    monthday  => $cron_monthday,
+    month     => $cron_month,
+    weekday   => $cron_weekday,
   }
 
 }
