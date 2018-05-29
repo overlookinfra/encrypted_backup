@@ -35,7 +35,12 @@ do
   /usr/bin/gpg --encrypt --compress-level 0 --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${DISK_PATH}
 
   # Merge snapshot back to original
-  virsh blockcommit ${VM} ${DISK_ID} --active --verbose --pivot
+  if ! virsh blockcommit ${VM} ${DISK_ID} --active --verbose --pivot ; then
+    sleep 5
+    virsh blockjob ${VM} ${DISK_PATH}.snapshot_backup1 --abort
+    sleep 5
+    virsh blockcommit ${VM} ${DISK_ID} --active --verbose --pivot
+  fi
 
   # Delete delta file
   rm ${DISK_PATH}.snapshot_backup1
