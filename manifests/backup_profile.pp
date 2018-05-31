@@ -9,7 +9,7 @@ define encrypted_backup::backup_profile (
   $cron_weekday   = '*',
   $backup_dir     = "/opt/encrypted_backup/${title}_backup",
   $temp_dir       = "/opt/encrypted_backup/${title}_temp",
-  $tar_name       = 'backup.tar.gz',
+  $tar_name       = 'backup.tar',
   $commands_pre   = [],
   $commands_post  = [],
 ) {

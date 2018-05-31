@@ -25,11 +25,11 @@ date
 <%= $cmd %>
 <% } -%>
 
-# Tar/Gzip folder
-tar czf ${TEMP_DIR}/${TAR_NAME} ${BACKUP_DIR}/
+# Create Tar
+tar cf ${TEMP_DIR}/${TAR_NAME} ${BACKUP_DIR}/
 
 # Encrypt tar.gz
-/usr/bin/gpg --encrypt --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${TEMP_DIR}/${TAR_NAME}
+/usr/bin/gpg --encrypt --compress-level 0 --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${TEMP_DIR}/${TAR_NAME}
 
 # SFTP encrypted file to server
 /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $'put -r '${TEMP_DIR}/${TAR_NAME}.gpg
