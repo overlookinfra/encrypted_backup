@@ -9,6 +9,9 @@
 | -%>
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 SERVER_URL="<%= $server_url %>"
 KEY_AUTH="<%= $key_auth %>"
 BACKUP_DIR="<%= $backup_dir %>"
@@ -31,8 +34,11 @@ tar cf ${TEMP_DIR}/${TAR_NAME} ${BACKUP_DIR}/
 # Encrypt tar.gz
 /usr/bin/gpg --encrypt --compress-level 0 --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${TEMP_DIR}/${TAR_NAME}
 
-# SFTP encrypted file to server
-/usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $'put -r '${TEMP_DIR}/${TAR_NAME}.gpg
+# SFTP encrypted file to server with temp filename
+/usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${TEMP_DIR}/${TAR_NAME}.gpg ${TAR_NAME}.gpg.temp"
+
+# Rename temp file on server to real filename
+/usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${TAR_NAME}.gpg.temp ${TAR_NAME}.gpg"
 
 # Delete temp files
 rm -f ${TEMP_DIR}/${TAR_NAME}

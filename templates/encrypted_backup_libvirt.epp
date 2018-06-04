@@ -45,8 +45,11 @@ do
   # Delete delta file
   rm ${DISK_PATH}.snapshot_backup1
 
-  # SFTP encrypted file to server
-  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $'put -r '${DISK_PATH}.gpg
+  # SFTP encrypted file to server with temp filename
+  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${DISK_PATH}.gpg ${VM}.gpg.temp"
+
+  # Rename temp file on server to real filename
+  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${VM}.gpg.temp ${VM}.gpg"
 
   # Delete encrypted file
   rm ${DISK_PATH}.gpg
