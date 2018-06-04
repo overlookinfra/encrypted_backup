@@ -31,6 +31,9 @@ do
   # Create snapshot
   virsh snapshot-create-as --domain ${VM} snapshot_backup1 --diskspec ${DISK_ID},file=${DISK_PATH}.snapshot_backup1 --disk-only --atomic --no-metadata
 
+  # Delete old gpg file if exists
+  rm -rf ${DISK_PATH}.gpg
+
   # Encrypt original disk
   /usr/bin/gpg --encrypt --compress-level 0 --homedir /root/.gnupg --recipient ${GPG_RECIPIENT} ${DISK_PATH}
 
@@ -46,10 +49,10 @@ do
   rm ${DISK_PATH}.snapshot_backup1
 
   # SFTP encrypted file to server with temp filename
-  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${DISK_PATH}.gpg ${VM}.gpg.temp"
+  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${DISK_PATH}.gpg ${VM}.gpg.temp"
 
   # Rename temp file on server to real filename
-  /usr/bin/sftp -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${VM}.gpg.temp ${VM}.gpg"
+  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${VM}.gpg.temp ${VM}.gpg"
 
   # Delete encrypted file
   rm ${DISK_PATH}.gpg
