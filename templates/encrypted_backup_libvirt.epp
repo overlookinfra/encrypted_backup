@@ -49,10 +49,10 @@ do
   rm ${DISK_PATH}.snapshot_backup1
 
   # SFTP encrypted file to server with temp filename
-  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${DISK_PATH}.gpg ${VM}.gpg.temp"
+  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"put -r ${DISK_PATH}.gpg ${VM}.qcow2.gpg.temp"
 
   # Rename temp file on server to real filename
-  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${VM}.gpg.temp ${VM}.gpg"
+  /usr/bin/sftp -o ServerAliveInterval=5 -o ServerAliveCountMax=6 -i ${KEY_AUTH} ${SERVER_URL} <<< $"rename ${VM}.qcow2.gpg.temp ${VM}.qcow2.gpg"
 
   # Delete encrypted file
   rm ${DISK_PATH}.gpg
