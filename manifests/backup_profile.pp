@@ -1,3 +1,46 @@
+# @summary
+#   This type creates a cron job to backup a given directory, compress and encrypt it, then ship it
+#   via SFTP to another machine.
+#
+# @param backup_dir
+#   Specifies the directory to back up.
+#
+# @param commands_post
+#   An arbitrary set of commands to run after the backup job.
+#
+# @param commands_pre
+#   An arbitrary set of commands to run before the backup job.
+#
+# @param cron_hour
+#   The hour to run the cron job.
+#
+# @param cron_minute
+#   The minute to run the cron job.
+#
+# @param cron_month
+#   The month to run the cron job.
+#
+# @param cron_monthday
+#   The day of the month to run the cron job.
+#
+# @param cron_weekday
+#   The day of the week to run the cron job.
+#
+# @param gpg_recipient
+#   The name of the GPG recipient for decryption.
+#
+# @param key_auth
+#   Identifies the filepath on the hypervisor where SFTP key credentials are stored.
+#
+# @param server_url
+#   Ships backups via SFTP to the specified URL.
+#
+# @param tar_name
+#   The filename of the tarball where the backup is stored.
+#
+# @param temp_dir
+#   Specifies the directory where the temporary backup is stored.
+#
 define encrypted_backup::backup_profile (
   $server_url,
   $key_auth,
