@@ -9,13 +9,23 @@
 
 ## Description
 
-The `encrypted_backup` module provides a simple way to securely back up Linux machines and ship backups elswhere.
+The `encrypted_backup` module provides a simple way to securely back up Linux machines and ship backups elswhere. It encrypts data using GPG and transfers data via SFTP, making the backups jobs secure end-to-end.
 
-This module relies on many fundamental UNIX tools, such as cron, tar, and SSH, eliminating complexity and making this module lightweight and portable.
+This module relies on many fundamental *nix tools, such as cron, tar, and SSH, eliminating complexity and making this module lightweight and portable.
 
 ## Setup
 
-Prior to using this module, some additional configuration is required on the backup server for GPG, SSH, etc..
+Prior to using this module, you will need to set up a GPG keychain on the backup server to properly encrypt data.
+
+**Note:** `encrypted_backup` manages backup jobs with cron. As a result, we strongly recommend that you purge unmanaged cron jobs with Puppet. If you don't purge unmanaged cron jobs, older backup jobs will persist even after removing Puppet code.
+
+You can purge unmanaged cron jobs by including something like the following in your Puppet code:
+
+```puppet
+resources { 'cron':
+  purge => true,
+}
+```
 
 ## Usage
 
