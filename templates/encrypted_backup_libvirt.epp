@@ -22,6 +22,11 @@ date
 # Get list of running VMs
 for VM in "${VM_LIST[@]}"
 do
+  # Skip to next iteration of the loop if a snapshot already exists
+  if test -e ${DISK_PATH}.snapshot_backup1 ; then
+    continue
+  fi
+
   # Get location of first disk
   DISK_PATH=$(virsh domblklist ${VM} | sed -n '3p' | awk '{print $2}')
 
