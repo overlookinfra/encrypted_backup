@@ -1,5 +1,9 @@
 # Encrypted Backup
 
+> This module is maintained by Puppet for internal purposes, and we have no plans for future feature development. It does not qualify for Puppet Support plans.
+>
+> [tier:maintenance-mode]
+
 ## Table of Contents
 
 1. [Description](#description)
